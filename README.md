@@ -1,4 +1,4 @@
-# Daltonize
+# Daltonize (with PyTorch support)
 
 Daltonize simulates the three types of dichromatic color blindness and
 images and matplotlib figures. Generalizing and omitting a lot of
@@ -89,6 +89,8 @@ at many web resources, including http://www.daltonize.org/
 Color blind friendly color maps can be found at
 http://colorbrewer2.org/ All of these are included in the python
 matplotlib and seaborn plotting libraries.
+
+PyTorch support added by Tal Golan.
 
 ## Example Images for Color Blindness
 

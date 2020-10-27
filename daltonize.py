@@ -25,13 +25,19 @@ try:
 except ImportError:
     _NO_MPL = True
 
+try:
+	import torch
+	_NO_TORCH = False
+except:
+	_NO_TORCH = True
+
 
 def transform_colorspace(img, mat):
     """Transform image to a different color space.
 
     Arguments:
     ----------
-    img : array of shape (M, N, 3)
+    img : array of shape (M, N, 3) (Numpy Array or PyTorch Tensor)
     mat : array of shape (3, 3)
         conversion matrix to different color space
 
@@ -40,15 +46,17 @@ def transform_colorspace(img, mat):
     out : array of shape (M, N, 3)
     """
     # Fast element (=pixel) wise matrix multiplication
-    return np.einsum("ij, ...j", mat, img)
+    if _NO_TORCH or not isinstance(img,torch.Tensor):
+    	return np.einsum("ij, ...j", mat, img)
+   	else:
+    	return torch.einsum("ij, ...j", torch.as_tensor(mat, dtype=img.dtype, device=img.device), img)
 
-
-def simulate(img, color_deficit="d"):
+def simulate(img, color_deficit="d",backend='numpy'):
     """Simulate the effect of color blindness on an image.
 
     Arguments:
     ----------
-    img : PIL.PngImagePlugin.PngImageFile, input image
+    img : PIL.PngImagePlugin.PngImageFile, input image OR (M,N,3) PyTorch Tensor.
     color_deficit : {"d", "p", "t"}, optional
         type of colorblindness, d for deuteronopia (default),
         p for protonapia,
@@ -72,11 +80,14 @@ def simulate(img, color_deficit="d"):
     lms2rgb = np.array([[8.09444479e-02, -1.30504409e-01, 1.16721066e-01],
                         [-1.02485335e-02, 5.40193266e-02, -1.13614708e-01],
                         [-3.65296938e-04, -4.12161469e-03, 6.93511405e-01]])
+    if _NO_TORCH or not isinstance(img,torch.Tensor):
+	    img = img.copy()
+	    img = img.convert('RGB')
 
-    img = img.copy()
-    img = img.convert('RGB')
+	    rgb = np.asarray(img, dtype=float)
+	else:
+		rgb = img
 
-    rgb = np.asarray(img, dtype=float)
     # first go from RBG to LMS space
     lms = transform_colorspace(rgb, rgb2lms)
     # Calculate image as seen by the color blind
@@ -93,7 +104,7 @@ def daltonize(rgb, color_deficit='d'):
     Arguments:
     ----------
     rgb : array of shape (M, N, 3)
-        original image in RGB format
+        original image in RGB format (OR PyTorch (M,N,3) Tensor)
     color_deficit : {"d", "p", "t"}, optional
         type of colorblindness, d for deuteronopia (default),
         p for protonapia,
@@ -109,7 +120,10 @@ def daltonize(rgb, color_deficit='d'):
     # rgb - sim_rgb contains the color information that dichromats
     # cannot see. err2mod rotates this to a part of the spectrum that
     # they can see.
-    rgb = rgb.convert('RGB')
+
+    if _NO_TORCH or not isinstance(img,torch.Tensor):
+    	rgb = rgb.convert('RGB')
+
     err = transform_colorspace(rgb - sim_rgb, err2mod)
     dtpn = err + rgb
     return dtpn
