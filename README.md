@@ -27,7 +27,7 @@ git clone git@github.com:joergdietrich/daltonize.git
 
 With PyTorch support:
 ```
-git clone git@github.com:Tal-Golan/daltonize.git
+git clone https://github.com/Tal-Golan/daltonize.git
 ```
 
 
