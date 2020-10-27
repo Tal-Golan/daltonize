@@ -19,9 +19,17 @@ for publication.
 
 ## Installation
 
+Original library:
+
 ```
 git clone git@github.com:joergdietrich/daltonize.git
 ```
+
+With PyTorch support:
+```
+git clone git@github.com:Tal-Golan/daltonize.git
+```
+
 
 and copy `daltonize.py` to a location in your `$PATH` and/or
 `$PYTHONPATH`. Daltonize depends
