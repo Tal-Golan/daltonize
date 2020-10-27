@@ -26,10 +26,10 @@ except ImportError:
     _NO_MPL = True
 
 try:
-	import torch
-	_NO_TORCH = False
+    import torch
+    _NO_TORCH = False
 except:
-	_NO_TORCH = True
+    _NO_TORCH = True
 
 
 def transform_colorspace(img, mat):
@@ -47,9 +47,9 @@ def transform_colorspace(img, mat):
     """
     # Fast element (=pixel) wise matrix multiplication
     if _NO_TORCH or not isinstance(img,torch.Tensor):
-    	return np.einsum("ij, ...j", mat, img)
-   	else:
-    	return torch.einsum("ij, ...j", torch.as_tensor(mat, dtype=img.dtype, device=img.device), img)
+        return np.einsum("ij, ...j", mat, img)
+    else:
+        return torch.einsum("ij, ...j", torch.as_tensor(mat, dtype=img.dtype, device=img.device), img)
 
 def simulate(img, color_deficit="d",backend='numpy'):
     """Simulate the effect of color blindness on an image.
@@ -81,12 +81,12 @@ def simulate(img, color_deficit="d",backend='numpy'):
                         [-1.02485335e-02, 5.40193266e-02, -1.13614708e-01],
                         [-3.65296938e-04, -4.12161469e-03, 6.93511405e-01]])
     if _NO_TORCH or not isinstance(img,torch.Tensor):
-	    img = img.copy()
-	    img = img.convert('RGB')
+        img = img.copy()
+        img = img.convert('RGB')
 
-	    rgb = np.asarray(img, dtype=float)
-	else:
-		rgb = img
+        rgb = np.asarray(img, dtype=float)
+    else:
+        rgb = img
 
     # first go from RBG to LMS space
     lms = transform_colorspace(rgb, rgb2lms)
@@ -122,7 +122,7 @@ def daltonize(rgb, color_deficit='d'):
     # they can see.
 
     if _NO_TORCH or not isinstance(img,torch.Tensor):
-    	rgb = rgb.convert('RGB')
+        rgb = rgb.convert('RGB')
 
     err = transform_colorspace(rgb - sim_rgb, err2mod)
     dtpn = err + rgb
